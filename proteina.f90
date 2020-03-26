@@ -120,6 +120,6 @@ if(rank.eq.0) then
 write(6,*)'vol de int', sumprotpol*cellvol, 4.d0/3.d0*3.1416*(((protR+1)*delta)**3-(protR*delta)**3)
 endif !rank
 call MPI_Barrier(  MPI_COMM_WORLD, ierr)
-
+!test
 !call stopundef('rock')
 end subroutine
