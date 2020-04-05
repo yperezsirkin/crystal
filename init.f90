@@ -1,4 +1,3 @@
-
 subroutine initmpi
 use MPI
 use chainsdat
@@ -34,6 +33,7 @@ vprot= ((4.0/3.0)*pi*(protR*delta)**3)/vsol !yamila
 !vprot= ((4.0/3.0)*pi*(protR*delta+delta/2.0)**3)/vsol
 if(electroflag.eq.0)eqs=(1+N_poorsol)
 if(electroflag.eq.1)eqs=(2+N_poorsol)
+if(ppflag.eq.1) eqs = eqs + 1 !yamila interaccion particula particula 
 end subroutine
 
 subroutine initall
@@ -70,8 +70,8 @@ if(rank.eq.0) then
        open(unit=314, file='F_mixpos2.dat',  access='APPEND')
        open(unit=315, file='F_particula.dat',  access='APPEND')!yamila
        open(unit=316, file='F_partpol.dat',  access='APPEND')!yamila
-
-
+       open(unit=317, file='F_partpart.dat',  access='APPEND')!yamila
+ 
 endif
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -387,13 +387,13 @@ integer ip
 integer ix,iy,iz
 real*8 temp
 integer ncells
-
+real *8 ptotal(dimx, dimy, dimz)
 
 ncells = dimx*dimy*dimz
 
 do ix=1,dimx
- do iy=1,dimy
-  do iz=1,dimz
+do iy=1,dimy
+do iz=1,dimz
      xh(ix,iy,iz)=xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1))
 
      do ip = 1, N_poorsol
@@ -401,13 +401,22 @@ do ix=1,dimx
      enddo
 
      if(electroflag.eq.1)psi(ix,iy,iz)=xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)
-  enddo
- enddo
+
+ if(ppflag.eq.1) then  !yamila
+     if(electroflag.eq.0) then
+      ptotal(ix,iy,iz)=xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)
+     else
+      ptotal(ix,iy,iz)=xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells)
+     endif
+ endif  
+
+enddo
+enddo
 enddo 
    
 do ix=1,int(dimx/2)
- do iy=1,dimy
-  do iz=1,dimz
+do iy=1,dimy
+do iz=1,dimz
       
      temp = xh(ix,iy,iz)
      xh(ix,iy,iz) = xh(dimx-ix,iy,iz)
@@ -424,15 +433,22 @@ do ix=1,int(dimx/2)
      psi(ix,iy,iz) = psi(dimx-ix,iy,iz)
      psi(dimx-ix,iy,iz) = temp
      endif
-  
-  enddo
- enddo
+
+     if(ppflag.eq.1) then  !yamila
+     temp = ptotal(ix,iy,iz)
+     ptotal(ix,iy,iz) = ptotal(dimx-ix,iy,iz)
+     ptotal(dimx-ix,iy,iz) = temp
+     endif
+
+       
+enddo
+enddo
 enddo
     
   
 do ix=1,dimx
-   do iy=1,dimy
-      do iz=1,dimz
+do iy=1,dimy
+do iz=1,dimz
         xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1))= xh(ix,iy,iz)
 
         do ip = 1, N_poorsol
@@ -440,8 +456,17 @@ do ix=1,dimx
         enddo
 
         if(electroflag.eq.1)xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)= psi(ix,iy,iz)
-      enddo
-   enddo
+     
+     if(ppflag.eq.1) then  !yamila
+     if(electroflag.eq.0) then
+      xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)=ptotal(ix,iy,iz)
+     else
+      xflag(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells)=ptotal(ix,iy,iz)
+     endif
+     endif
+
+enddo
+enddo
 enddo
 
 

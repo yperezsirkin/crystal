@@ -101,6 +101,14 @@ do ix=1,dimx
       xtotal(ix,iy,iz,ip) = x(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+ ip*ncells) !fraccion polimero de tipo ip
      enddo
      if(electroflag.eq.1)psi(ix,iy,iz)=x(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)   !potencial electrostatico
+   
+     if(ppflag.eq.1) then  !yamila
+     if(electroflag.eq.0) then
+      ptotal(ix,iy,iz)=x(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)
+     else
+      ptotal(ix,iy,iz)=x(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells)
+     endif
+     endif
 
   enddo
  enddo
@@ -271,7 +279,28 @@ do iz = numz*rank+1, zmx
   enddo !jy
   enddo !jx
 
+!!!interaccion particula -particula
+if(ppflag.eq.1 ) then
 
+  do jx = - rcutpart, rcutpart
+  do jy = - rcutpart, rcutpart
+  do jz = - rcutpart, rcutpart
+
+     ax = jx+ix
+     ay = jy+iy
+     az = jz+iz
+
+!!!!PBC!!!!
+  ax = PBCSYMI(ax,dimx)
+  ay = PBCSYMI(ay,dimy)
+  az = PBCSYMI(az,dimz)
+     fv2=(1.0-volprot(ax,ay,az))
+    fprot_tosend(ix,iy,iz) = fprot_tosend(ix,iy,iz)*dexp(wpartpart(jx,jy,jz)*ptotal(ax,ay,az)*epartpart*fv2*delta**3)
+  
+  enddo !jz
+  enddo !jy
+  enddo !jx
+endif !ppflag
 !compute la fraccion volumetrica.!!!!!!!!!!!!!!!
   do jx = -protR, protR
   do jy = -protR, protR
@@ -651,6 +680,17 @@ do ip = 1, N_poorsol
    endif
   enddo ! im
 enddo ! ip
+
+
+ if(ppflag.eq.1) then  !yamila
+   if(electroflag.eq.0) then
+  f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells) = ptotal(ix,iy,iz)
+f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells) = f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)-fprot(ix,iy,iz)
+   else
+f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells) = ptotal(ix,iy,iz)
+f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells) = f(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells)-fprot(ix,iy,iz)
+   endif
+  endif 
 
 enddo ! ix
 enddo ! iy

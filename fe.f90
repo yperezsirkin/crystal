@@ -40,6 +40,7 @@ character*5  title
 real*8 xtotalsum(dimx,dimy,dimz)
 real*8 F_prot, F_protbulk !yamila 
 real*8 F_protpol !yamila
+real*8 F_pp !yamila
 ! MPI
 integer stat(MPI_STATUS_SIZE) 
 integer source
@@ -211,7 +212,6 @@ endif
 
 ! 6.2 Entropia polimero/particula yamila
 !termino entropico traslacional y muN with respect to the bulk
-   
       F_prot = 0.d0   
 
       F_protbulk = xprotbulk*(dlog(xprotbulk/vprot)-1.0- dlog(expmuprot) + dlog(vprot))/vprot/vsol
@@ -532,6 +532,47 @@ F_protpol = 0.d0
   F_protpol = F_protpol*delta**3/vpol/vsol
   Free_Energy = Free_Energy + F_protpol
  
+!!!! Interaccion densidad de particulas con densidad de particulas yamila
+if(ppflag.eq.1) then
+F_pp = 0.d0
+
+  do ix = 1, dimx
+  do iy = 1, dimy
+  do iz = 1, dimz
+
+   fv=(1.0-volprot(ix,iy,iz))
+
+   do jx = -rcutpart, rcutpart
+   do jy = -rcutpart, rcutpart
+   do jz = -rcutpart, rcutpart
+    
+
+     ax = jx + ix
+     ay = jy + iy
+     az = jz + iz
+
+!!!!PBC!!!!
+  ax = PBCSYMI(ax,dimx)
+  ay = PBCSYMI(ay,dimy)
+  az = PBCSYMI(az,dimz)
+!!!!!!!!!!!
+
+  fv2=(1.0-volprot(ax,ay,az))
+
+   F_pp = F_pp - 0.500*epartpart*wpartpart(jx,jy,jz)*fprot(ix,iy,iz)*fprot(ax,ay,az)*fv*fv2
+   F_pp = F_pp + 0.500*epartpart*wpartpart(jx,jy,jz)*xprotbulk*xprotbulk*fv*fv2/vprot/vprot/vsol/vsol 
+  
+  enddo !jz
+  enddo !jy
+  enddo !jx
+
+ enddo !iz
+ enddo !iy
+ enddo !ix
+
+  F_pp = F_pp*delta**3*delta**3
+  Free_Energy = Free_Energy + F_pp
+endif
 !!!Print
       if (verbose.ge.1) then
       write(stdout,*) 'Free_Energy_Calc: Free energy(1) = ', Free_energy
@@ -582,7 +623,7 @@ enddo
            sumpi = sumpi-dlog(xsolbulk)*fv
      
      sumrho = sumrho + ( - xh(ix, iy, iz) -xHplus(ix, iy, iz) &
-    - xOHmin(ix, iy, iz)-(xpos(ix, iy, iz)+xneg(ix, iy, iz))/vsalt)*fv-fprot(ix,iy,iz)*vsol*fv !xprot(ix,iy,iz)/vprot)*fv!   yamila
+    - xOHmin(ix, iy, iz)-(xpos(ix, iy, iz)+xneg(ix, iy, iz))/vsalt)*fv-fprot(ix,iy,iz)*vsol*fv !   yamila
 
 
            sumrho = sumrho - ( - xsolbulk -xHplusbulk &
@@ -617,7 +658,7 @@ enddo
          Free_Energy2 = Free_Energy2-dlog(q0(ii)/shift)*ngpol(ii) 
          enddo
 
-         Free_Energy2 = Free_Energy2 + suma - F_vdW - F_protpol
+         Free_Energy2 = Free_Energy2 + suma - F_vdW - F_protpol - F_pp
 
       if (verbose.ge.1) then
       write(stdout,*) 'Free_Energy_Calc: Free energy(2) = ', Free_energy2, sumdiel
@@ -655,7 +696,8 @@ enddo
          write(313,*)looped, mupol
          write(315,*)looped, F_prot  !yamila
          write(316,*)looped, F_protpol !yamila
-         endif
+         write(317,*)looped, F_pp !yamila   
+        endif
  
  888     call MPI_BCAST(free_energy, 1, MPI_DOUBLE_PRECISION,0, MPI_COMM_WORLD, err)
 

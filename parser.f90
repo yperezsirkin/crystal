@@ -47,6 +47,7 @@ branched = 0 ! branched chains?
 
 sigmar = 0.0 ! random sigma
 
+ppflag = 1 !yamila system with interaction part-part
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! Check validity of input
@@ -90,7 +91,9 @@ scs(1) = 1.0
 cprot = ndr !yamila
 protR = ndi !yamila
 eprotpol = ndr !yamila
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+epartpart = ndr !yamila
+rcutpart = ndi !yamila
+!!!!!!!!!!!!!!!c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 ! Control file variables
@@ -156,6 +159,10 @@ do while (ios == 0)
 
  case ('electroflag')
    read(buffer, *, iostat=ios) electroflag
+   if(rank.eq.0)write(stdout,*) 'parser:','Set ',trim(label),' = ',trim(buffer)
+
+ case ('ppflag') !yamila
+   read(buffer, *, iostat=ios) ppflag
    if(rank.eq.0)write(stdout,*) 'parser:','Set ',trim(label),' = ',trim(buffer)
 
  case ('branched')
@@ -344,6 +351,14 @@ do while (ios == 0)
 
  case ('eprotpol') !yamila
    read(buffer, *, iostat=ios) eprotpol
+   if(rank.eq.0)write(stdout,*) 'parser:','Set ',trim(label),' = ',trim(buffer)
+
+ case ('epartpart') !yamila
+   read(buffer, *, iostat=ios) epartpart
+   if(rank.eq.0)write(stdout,*) 'parser:','Set ',trim(label),' = ',trim(buffer)
+
+ case ('rcutpart') !yamila
+   read(buffer, *, iostat=ios) rcutpart
    if(rank.eq.0)write(stdout,*) 'parser:','Set ',trim(label),' = ',trim(buffer)
 
  case ('systemtype')
@@ -581,7 +596,9 @@ if(fz.eq.ndr)call stopundef('fz')
 if(NNN.eq.ndi) call stopundef('NNN') 
 if(cprot.eq.ndr)call stopundef('cprot') ! yamila
 if(protR.eq.ndi)call stopundef('protR') ! yamila
-if(eprotpol.eq.ndr)call stopundef('cprot') ! yamila
+if(eprotpol.eq.ndr)call stopundef('eprotpol') ! yamila
+if(epartpart.eq.ndr)call stopundef('epartpart') ! yamila
+if(rcutpart.eq.ndi)call stopundef('rcutpart') ! yamila
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 end subroutine

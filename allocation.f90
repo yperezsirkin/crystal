@@ -20,6 +20,7 @@ implicit none
 ALLOCATE(xtotal(dimx, dimy, dimz, N_poorsol))
 ALLOCATE(psi(0:dimx+1, 0:dimy+1, 0:dimz+1))
 ALLOCATE(xh(dimx, dimy, dimz))
+ALLOCATE(ptotal(dimx,dimy, dimz)) !yamila 
 
 ! kinsol
 ALLOCATE (xflag(eqs*dimx*dimy*dimz))
@@ -59,4 +60,5 @@ allocate(cppini(size))
 !protein yamila
 allocate (protvol(-protR:protR, -protR:protR, -protR:protR))
 allocate (protpol(-protR-1:protR+1, -protR-1:protR+1, -protR-1:protR+1))
+allocate (wpartpart(-rcutpart:rcutpart,-rcutpart:rcutpart,-rcutpart:rcutpart))
 end subroutine

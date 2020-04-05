@@ -26,6 +26,7 @@ integer  dimz
 integer PBC(6)
 integer vtkflag
 integer electroflag
+integer ppflag !yamila
 integer eqs ! number of set of equations 
 endmodule
 
@@ -134,6 +135,7 @@ real*8, allocatable :: sumgauche(:)
 real*8, allocatable :: pro(:,:)
 real*8, allocatable :: xh(:, :, :)
 real*8 shift
+real*8, allocatable :: ptotal(:,:,:) ! yamila para interaccion p-p
 endmodule
 
 module conformations
@@ -255,4 +257,7 @@ real *8 xprotbulk, expmuprot
 real *8 proprot
 real *8, allocatable :: protpol(:,:,:)
 real *8 eprotpol
+real *8, allocatable :: wpartpart(:,:,:)
+integer rcutpart
+real *8 epartpart
 end module

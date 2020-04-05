@@ -60,6 +60,19 @@ do i = ncells*(N_poorsol+1), ncells*(N_poorsol+2)
 enddo
 endif
 
+if(ppflag.eq.1) then  !yamila NO TENGO IDEA
+ if(electroflag.eq.0) then
+do i = ncells*(N_poorsol+1), ncells*(N_poorsol+2)
+ !  pp(i) = 1.0
+  pp(i) = 0.1 / (1.0+exp(1.0-udata(i)))
+enddo
+else
+do i = ncells*(N_poorsol+2), ncells*(N_poorsol+3)
+   pp(i) = 1.0
+enddo
+endif
+endif
+
    ier = 0
 return
 end
@@ -160,6 +173,17 @@ if(electroflag.eq.1) then
 do i = ncells*(N_poorsol+1), ncells*(N_poorsol+2)  !constraint vector
    constr(i) = 0.0 ! no contraint for psi
 enddo
+endif
+if(ppflag.eq.1) then !yamila TAMPOCO tengo idea
+if(electroflag.eq.0) then
+do i = ncells*(N_poorsol+1), ncells*(N_poorsol+2)  !constraint vector
+   constr(i) = 0.0 ! no contraint for psi
+enddo
+else
+do i = ncells*(N_poorsol+2), ncells*(N_poorsol+3)  !constraint vector
+   constr(i) = 0.0 ! no contraint for psi
+enddo
+endif
 endif
 
 call fkinsetvin('CONSTR_VEC', constr, ier) ! constraint vector

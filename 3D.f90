@@ -12,6 +12,7 @@ use MPI
 use ellipsoid
 use ematrix
 use mparameters_monomer
+use protein !yamila
 implicit none
 external fcn
 integer i, ix, iy, iz, ip
@@ -27,6 +28,7 @@ integer ncells
 ! Volumen fraction
 real*8 xh(dimx, dimy, dimz), xtotal(dimx,dimy,dimz,N_poorsol)
 real*8 psi(dimx, dimy, dimz) ! potencial
+real*8 ptotal(dimx,dimy,dimz) !yamila
 real*8 temp
 
 ! MPI
@@ -69,6 +71,20 @@ if(electroflag.eq.1) then
 
 endif ! electroflag
 endif ! infile
+
+if(ppflag.eq.1) then ! yamila
+if(electroflag.eq.0) then
+  do i=(N_poorsol+1)*ncells+1, (N_poorsol+2)*ncells
+    xg1(i)= xprotbulk/vprot/vsol !0.0d0
+    x1(i)= xprotbulk/vprot/vsol  ! 0.0d0
+  enddo
+else
+  do i=(N_poorsol+2)*ncells+1, (N_poorsol+3)*ncells
+    xg1(i)=xprotbulk/vprot/vsol  !0.0d0
+    x1(i)= xprotbulk/vprot/vsol  !0.0d0
+  enddo
+endif
+endif
 
 !--------------------------------------------------------------
 ! Solve               
@@ -126,8 +142,8 @@ endif
 
 ! Recupera xh y psi (NO SON COMMON!)
 do ix=1,dimx
-   do iy=1,dimy
-      do iz=1,dimz
+do iy=1,dimy
+do iz=1,dimz
        xh(ix,iy,iz)=x1(ix+dimx*(iy-1)+dimx*dimy*(iz-1))
 
        do ip=1, N_poorsol
@@ -135,8 +151,18 @@ do ix=1,dimx
        enddo
 
        if(electroflag.eq.1)psi(ix,iy,iz)=x1(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells)
-      enddo
-   enddo  
+
+   if(ppflag.eq.1) then !yamila
+   if(electroflag.eq.0) then
+    ptotal(ix,iy,iz)=x1(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+1)*ncells) 
+   else
+    ptotal(ix,iy,iz)=x1(ix+dimx*(iy-1)+dimx*dimy*(iz-1)+(N_poorsol+2)*ncells)
+   endif
+   endif
+       
+
+enddo
+enddo  
 enddo
 
 ! Chequea si exploto... => Sistema anti-crash
