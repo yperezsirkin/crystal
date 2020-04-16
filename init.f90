@@ -118,7 +118,7 @@ expmupos = xposbulk /xsolbulk**vsalt
 expmuneg = xnegbulk /xsolbulk**vsalt
 expmuHplus = xHplusbulk /xsolbulk   ! vsol = vHplus 
 expmuOHmin = xOHminbulk /xsolbulk   ! vsol = vOHmin 
-expmuprot = xprotbulk / xsolbulk**vprot !yamila
+expmuprot = xprotbulk / xsolbulk**vprot/dexp(sum(wpartpart)*xprotbulk*epartpart/vprot/vsol) !yamila
 
 
 end subroutine

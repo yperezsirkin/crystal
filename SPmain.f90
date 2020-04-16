@@ -42,16 +42,21 @@ if(rank.eq.0)write(stdout,*) 'MPI OK'
 if(rank.eq.0)write(10,*) 'Program Crystal'
 if(rank.eq.0)write(10,*) 'GIT Version: ', _VERSION
 if(rank.eq.0)write(10,*) 'MPI OK'
+
 call readinput
 
 call monomer_definitions
 call chains_definitions
 
+
 call initconst
 call inittransf ! Create transformation matrixes
 call initellpos ! calculate real positions for ellipsoid centers
-call initall
 call allocation
+call crea_prot !yamila calcula volume que ocupa la proteina en cada celda
+
+call initall
+!call allocation
 
 !!! General files
 
@@ -68,7 +73,7 @@ endif
 
 open(file='free_energy.dat', unit=9000)
 
-call crea_prot !yamila calcula volume que ocupa la proteina en cada celda
+!call crea_prot !yamila calcula volume que ocupa la proteina en cada celda
 
 call kais 
 if(rank.eq.0)write(stdout,*) 'Kai OK'

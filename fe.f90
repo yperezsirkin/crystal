@@ -116,7 +116,7 @@ endif
       do iz = 1, dimz
       fv=(1.0-volprot(ix,iy,iz))
       F_Mix_s = F_Mix_s + xh(ix, iy,iz)*(dlog(xh(ix, iy, iz))-1.0)*fv
-      F_Mix_s = F_Mix_s - xsolbulk*(dlog(xsolbulk)-1.0)*fv
+      F_Mix_s = F_Mix_s - xsolbulk*(dlog(xsolbulk)-1.0)
       enddo      
       enddo      
       enddo      
@@ -137,7 +137,7 @@ endif
       *(dlog(xpos(ix, iy, iz)/vsalt)-1.0-dlog(expmupos) + dlog(vsalt))*fv
 
       F_Mix_pos = F_Mix_pos - xposbulk &
-      *(dlog(xposbulk/vsalt)-1.0-dlog(expmupos) + dlog(vsalt))*fv
+      *(dlog(xposbulk/vsalt)-1.0-dlog(expmupos) + dlog(vsalt))
 
       enddo
       enddo
@@ -159,7 +159,7 @@ endif
       *(dlog(xneg(ix, iy, iz)/vsalt)-1.0- dlog(expmuneg) + dlog(vsalt))*fv
 
       F_Mix_neg = F_Mix_neg - xnegbulk &
-      *(dlog(xnegbulk/vsalt)-1.0- dlog(expmuneg) + dlog(vsalt))*fv
+      *(dlog(xnegbulk/vsalt)-1.0- dlog(expmuneg) + dlog(vsalt))
 
       enddo 
       enddo 
@@ -181,7 +181,7 @@ endif
      +xHplus(ix, iy, iz)*(dlog(xHplus(ix,iy,iz))-1.0 -dlog(expmuHplus))*fv
 
       F_Mix_Hplus = F_Mix_Hplus &
-     -xHplusbulk*(dlog(xHplusbulk)-1.0 -dlog(expmuHplus))*fv
+     -xHplusbulk*(dlog(xHplusbulk)-1.0 -dlog(expmuHplus))
 
       enddo
       enddo
@@ -201,7 +201,7 @@ endif
 
       F_Mix_OHmin = F_Mix_OHmin + xOHmin(ix, iy,iz)*(dlog(xOHmin(ix, iy, iz))-1.0-dlog(expmuOHmin))*fv
 
-      F_Mix_OHmin = F_Mix_OHmin - xOHminbulk*(dlog(xOHminbulk)-1.0-dlog(expmuOHmin))*fv
+      F_Mix_OHmin = F_Mix_OHmin - xOHminbulk*(dlog(xOHminbulk)-1.0-dlog(expmuOHmin))
 
       enddo
       enddo
@@ -225,7 +225,7 @@ endif
       F_prot = F_prot + fprot(ix,iy,iz)&
       *(dlog(fprot(ix, iy, iz)*vsol) - 1.0 - dlog(expmuprot) + dlog(vprot))*fv
 
-      F_prot = F_prot - F_protbulk*fv
+      F_prot = F_prot - F_protbulk
       
       enddo
       enddo
@@ -560,7 +560,7 @@ F_pp = 0.d0
   fv2=(1.0-volprot(ax,ay,az))
 
    F_pp = F_pp - 0.500*epartpart*wpartpart(jx,jy,jz)*fprot(ix,iy,iz)*fprot(ax,ay,az)*fv*fv2
-   F_pp = F_pp + 0.500*epartpart*wpartpart(jx,jy,jz)*xprotbulk*xprotbulk*fv*fv2/vprot/vprot/vsol/vsol 
+   F_pp = F_pp + 0.500*epartpart*wpartpart(jx,jy,jz)*xprotbulk*xprotbulk/vprot/vprot/vsol/vsol 
   
   enddo !jz
   enddo !jy
@@ -570,7 +570,7 @@ F_pp = 0.d0
  enddo !iy
  enddo !ix
 
-  F_pp = F_pp*delta**3*delta**3
+  F_pp = F_pp*delta**3
   Free_Energy = Free_Energy + F_pp
 endif
 !!!Print
@@ -620,14 +620,14 @@ enddo
       fv=(1.0-volprot(ix,iy,iz))
 
            sumpi = sumpi+dlog(xh(ix, iy, iz))*fv     !termino osmotico
-           sumpi = sumpi-dlog(xsolbulk)*fv
+           sumpi = sumpi-dlog(xsolbulk)
      
      sumrho = sumrho + ( - xh(ix, iy, iz) -xHplus(ix, iy, iz) &
     - xOHmin(ix, iy, iz)-(xpos(ix, iy, iz)+xneg(ix, iy, iz))/vsalt)*fv-fprot(ix,iy,iz)*vsol*fv !   yamila
 
 
            sumrho = sumrho - ( - xsolbulk -xHplusbulk &
-       -xOHminbulk - (xposbulk+xnegbulk)/vsalt)*fv+xprotbulk/vprot*fv ! sum over  rho_i i=+,-,s  yamila
+       -xOHminbulk - (xposbulk+xnegbulk)/vsalt)+xprotbulk/vprot ! sum over  rho_i i=+,-,s  yamila
 
          sumel = sumel - qtot(ix, iy, iz)*psi(ix, iy, iz)/2.0 
       

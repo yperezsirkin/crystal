@@ -295,7 +295,7 @@ if(ppflag.eq.1 ) then
   ay = PBCSYMI(ay,dimy)
   az = PBCSYMI(az,dimz)
      fv2=(1.0-volprot(ax,ay,az))
-    fprot_tosend(ix,iy,iz) = fprot_tosend(ix,iy,iz)*dexp(wpartpart(jx,jy,jz)*ptotal(ax,ay,az)*epartpart*fv2*delta**3)
+    fprot_tosend(ix,iy,iz) = fprot_tosend(ix,iy,iz)*dexp(wpartpart(jx,jy,jz)*ptotal(ax,ay,az)*epartpart*fv2)
   
   enddo !jz
   enddo !jy

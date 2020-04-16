@@ -117,12 +117,14 @@ r2 = (ix*ix+iy*iy+iz*iz)*delta*delta
 
 if(r2.gt.d_prot2) then
 
-wpartpart(ix,iy,iz) = -(d_prot2/(r2-d_prot2)+ d_prot2/r2 + 2.d0*log((r2-d_prot2)/r2))/12.d0
+wpartpart(ix,iy,iz) = (d_prot2/(r2-d_prot2)+ d_prot2/r2 + 2.d0*log((r2-d_prot2)/r2))/12.d0
 
 endif
 
 enddo !ix
 enddo !iy
 enddo !iz
+
+wpartpart = wpartpart * cellvol
 call MPI_Barrier(  MPI_COMM_WORLD, ierr)
 end subroutine
